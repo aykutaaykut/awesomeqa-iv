@@ -1,0 +1,165 @@
+.ticketContainer {
+  padding: 2%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex-grow: 1;
+  background-color: var(--awesome-purple);
+  border-radius: 1rem;
+  box-shadow: 0px 1px 10px var(--awesome-highlight-color);
+  color: var(--awesome-white);
+  font-feature-settings: "clig" off, "liga" off;
+  font-family: Roboto;
+  font-size: 1.25rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 116.7%; /* 1.7505rem */
+  align-items: stretch;
+}
+
+.ticketDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex-grow: 1;
+}
+
+.messageContent {
+  flex: start;
+}
+
+.messageDetails {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.messageDetailsItem {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.5rem;
+}
+
+.messageDetailsItemTitle {
+  display: flex;
+  flex-direction: row;
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--awesome-yellow);
+}
+
+.messageDetailsItemValue {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  align-content: center;
+  flex-wrap: wrap;
+  flex-grow: 1;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 400;
+  cursor: default;
+}
+
+.button {
+  background: var(--awesome-background-color);
+  display: flex;
+  flex-direction: column;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  border-radius: 1rem;
+  border: 1px solid var(--awesome-highlight-color);
+  font-size: 1rem;
+  line-height: 2rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.button:disabled {
+  color: var(--awesome-purple);
+  cursor: not-allowed;
+}
+
+.openMessageButton {
+  color: var(--awesome-yellow);
+}
+
+.openMessageButton:hover {
+  color: black;
+  background-color: var(--awesome-yellow);
+}
+
+.resolveTicketButton {
+  color: var(--awesome-green);
+}
+
+.resolveTicketButton:enabled:hover {
+  color: black;
+  background-color: var(--awesome-green);
+}
+
+.deleteTicketButton {
+  color: var(--awesome-red);
+}
+
+.deleteTicketButton:enabled:hover {
+  color: black;
+  background-color: var(--awesome-red);
+}
+
+.contextMessagesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: space-around;
+}
+
+.contextMessagesButtonContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.contextMessagesButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  height: 1.5rem;
+  padding-right: 2rem;
+  background-position: calc(100% - 0.5rem) center;
+  background-repeat: no-repeat;
+  border-radius: 0.5rem;
+  border: 1px solid var(--awesome-highlight-color);
+  color: var(--awesome-background-color);
+  background-color: var(--awesome-yellow);
+  cursor: pointer;
+  background-image: url("../../public/arrow_down.svg");
+}
+
+.contextMessagesButton:hover {
+  box-shadow: 0px 4px 5px rgba(255, 204, 0, 0.15),
+    0px 1px 10px rgba(0, 0, 0, 0.12), 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.contextMessagesButtonClicked {
+  background-image: url("../../public/arrow_up.svg");
+}
+
+.contextMessagesTable {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  list-style-type: circle;
+}

@@ -1,0 +1,26 @@
+.badge {
+  background-color: var(--awesome-dark-purple);
+  color: var(--awesome-white);
+  font-size: 0.8rem;
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  box-shadow: 0px 1px 10px var(--awesome-highlight-color);
+  font-feature-settings: "clig" off, "liga" off;
+  font-family: Roboto;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 116.7%; /* 1.7505rem */
+  text-wrap: nowrap;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.blink {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
