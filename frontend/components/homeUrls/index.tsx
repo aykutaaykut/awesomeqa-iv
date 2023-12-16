@@ -1,5 +1,5 @@
 import styles from "./homeUrls.module.css";
-import Link from 'next/link'
+import Link from "next/link";
 
 const homeUrls = () => {
   return (
@@ -10,7 +10,6 @@ const homeUrls = () => {
           <p>About page related information states here.</p>
         </a>
       </Link>
-
 
       <Link href="/blog">
         <a className={styles.card}>
@@ -33,7 +32,7 @@ const homeUrls = () => {
         </a>
       </Link>
     </div>
-  )
-}
+  );
+};
 
 export default homeUrls;

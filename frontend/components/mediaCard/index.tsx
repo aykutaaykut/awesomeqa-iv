@@ -16,21 +16,36 @@ type MediaCardPropsType = {
   imageUrl: string;
 };
 
-export default function MediaCard({ title, rating, restaurantId, numberOfReviews, imageUrl }: MediaCardPropsType) {
+export default function MediaCard({
+  title,
+  rating,
+  restaurantId,
+  numberOfReviews,
+  imageUrl,
+}: MediaCardPropsType) {
   const router = useRouter();
 
   return (
-    <Card sx={{ width: 350}}>
+    <Card sx={{ width: 350 }}>
       <CardMedia component="img" height="140" image={imageUrl} />
       <CardContent>
         <Typography variant="h5" component="div">
           {title}
         </Typography>
-        <Rating value={rating} disabled precision={0.5} size="medium" sx={{ mt: 2, opacity: "1.0 !important" }} />
+        <Rating
+          value={rating}
+          disabled
+          precision={0.5}
+          size="medium"
+          sx={{ mt: 2, opacity: "1.0 !important" }}
+        />
         <Typography>({numberOfReviews} reviews)</Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" onClick={() => router.push("/restaurant/" + restaurantId)}>
+        <Button
+          size="small"
+          onClick={() => router.push("/restaurant/" + restaurantId)}
+        >
           Learn More
         </Button>
       </CardActions>

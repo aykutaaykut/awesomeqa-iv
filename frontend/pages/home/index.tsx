@@ -13,7 +13,9 @@ const Home: NextPage = () => {
       <Box sx={{ flexGrow: 1, mt: 15, mb: 15 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Box sx={{ display: "flex", justifyContent: "center", gap: "1rem" }}>
+            <Box
+              sx={{ display: "flex", justifyContent: "center", gap: "1rem" }}
+            >
               <AwesomeButton
                 text={"Knowledge Base"}
                 icon={"/library_books.svg"}
@@ -25,10 +27,7 @@ const Home: NextPage = () => {
                   router.push("/tickets?tab=open&page=1");
                 }}
               />
-              <AwesomeButton
-                text={"FQA Insights"}
-                icon={"/lightbulb.svg"}
-              />
+              <AwesomeButton text={"FQA Insights"} icon={"/lightbulb.svg"} />
             </Box>
           </Grid>
         </Grid>

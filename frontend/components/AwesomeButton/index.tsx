@@ -1,7 +1,11 @@
 import Image from "next/image";
 import styles from "./awesomeButton.module.css";
 
-const AwesomeButton: Function = (props: { text: string; icon: string; onClick?: any; }) => {
+const AwesomeButton: Function = (props: {
+  text: string;
+  icon: string;
+  onClick?: any;
+}) => {
   const {
     text,
     icon,
@@ -28,6 +32,6 @@ const AwesomeButton: Function = (props: { text: string; icon: string; onClick?: 
       <div className={styles.awesomeButtonText}>{text}</div>
     </button>
   );
-}
+};
 
 export default AwesomeButton;

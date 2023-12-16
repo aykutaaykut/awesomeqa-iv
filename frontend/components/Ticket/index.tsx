@@ -16,7 +16,7 @@ const Ticket: Function = ({
 
   const [status, setStatus] = useState(ticket.status);
   const [ts_last_status_change, setTsLastStatusChange] = useState(
-    ticket.ts_last_status_change
+    ticket.ts_last_status_change,
   );
   const [message, setMessage] = useState(undefined);
 
