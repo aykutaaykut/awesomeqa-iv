@@ -10,6 +10,7 @@ class Status(str, Enum):
     - RESOLVED = "resolved": Ticket is resolved.
     - DELETED = "deleted": Ticket is deleted.
     """
+
     OPEN = "open"
     RESOLVED = "resolved"
     DELETED = "deleted"

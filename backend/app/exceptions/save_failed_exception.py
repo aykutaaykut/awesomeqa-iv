@@ -10,8 +10,4 @@ class SaveFailedException(HTTPException):
         """
         Initializes a SaveFailedException.
         """
-        super().__init__(
-            status_code=500,
-            detail="Save failed.",
-            headers={"X-Error": message}
-        )
+        super().__init__(status_code=500, detail="Save failed.", headers={"X-Error": message})

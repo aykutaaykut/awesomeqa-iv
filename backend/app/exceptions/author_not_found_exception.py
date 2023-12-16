@@ -10,8 +10,4 @@ class AuthorNotFoundException(HTTPException):
         """
         Initializes an AuthorNotFoundException.
         """
-        super().__init__(
-            status_code=404,
-            detail="Author not found",
-            headers={"X-Error": message}
-        )
+        super().__init__(status_code=404, detail="Author not found", headers={"X-Error": message})

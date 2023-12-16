@@ -16,6 +16,7 @@ class AuthorModel(BaseModel):
     - is_bot (bool): Whether the author is a bot.
     - timestamp_insert (datetime): Timestamp when the author was created.
     """
+
     id: str
     name: str
     nickname: str

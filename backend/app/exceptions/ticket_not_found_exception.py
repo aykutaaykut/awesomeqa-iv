@@ -10,8 +10,4 @@ class TicketNotFoundException(HTTPException):
         """
         Initializes a TicketNotFoundException.
         """
-        super().__init__(
-            status_code=404,
-            detail="Ticket not found",
-            headers={"X-Error": message}
-        )
+        super().__init__(status_code=404, detail="Ticket not found", headers={"X-Error": message})

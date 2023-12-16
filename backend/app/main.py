@@ -39,8 +39,10 @@ async def root():
         in each status.
         """,
     status_code=status.HTTP_200_OK,
-    response_description="Dictionary containing the list of tickets in\
-        interest and the total number of tickets in each status.",
+    response_description=(
+        "Dictionary containing the list of tickets in interest and the total number of tickets in"
+        " each status."
+    ),
 )
 async def get_tickets(
     *,
@@ -122,11 +124,7 @@ async def delete_ticket(
     description="Gets the ticket message with the given `ticket_id`.",
     status_code=status.HTTP_200_OK,
     response_description="Ticket message with the given `ticket_id`.",
-    responses={
-        status.HTTP_404_NOT_FOUND: {
-            "description": "Ticket/Message not found."
-        }
-    },
+    responses={status.HTTP_404_NOT_FOUND: {"description": "Ticket/Message not found."}},
 )
 async def get_ticket_message(
     *,

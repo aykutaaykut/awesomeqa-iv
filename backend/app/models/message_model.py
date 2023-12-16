@@ -22,6 +22,7 @@ class MessageModel(BaseModel):
     - msg_url (str): URL of the message.
     - author (AuthorModel): Author of the message.
     """
+
     id: str
     channel_id: str
     parent_channel_id: str | None = None

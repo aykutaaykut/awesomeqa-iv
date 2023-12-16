@@ -16,6 +16,7 @@ class TicketModel(BaseModel):
     - timestamp (datetime): Ticket creation timestamp.
     - context_messages (list[str]): List of context message IDs.
     """
+
     id: str
     msg_id: str
     status: Status

@@ -10,8 +10,4 @@ class MessageNotFoundException(HTTPException):
         """
         Initializes a MessageNotFoundException.
         """
-        super().__init__(
-            status_code=404,
-            detail="Message not found",
-            headers={"X-Error": message}
-        )
+        super().__init__(status_code=404, detail="Message not found", headers={"X-Error": message})

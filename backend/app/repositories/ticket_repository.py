@@ -16,6 +16,7 @@ class TicketRepository:
     """
     Repository for tickets.
     """
+
     def __init__(self, filepath: str):
         """
         Initializes a TicketRepository.
@@ -26,14 +27,10 @@ class TicketRepository:
             self.data = json.load(json_file)
 
         ticket_model_type_adapter = TypeAdapter(list[TicketModel])
-        self.data["tickets"] = ticket_model_type_adapter.validate_python(
-            self.data["tickets"]
-        )
+        self.data["tickets"] = ticket_model_type_adapter.validate_python(self.data["tickets"])
 
         message_model_type_adapter = TypeAdapter(list[MessageModel])
-        self.data["messages"] = message_model_type_adapter.validate_python(
-            self.data["messages"]
-        )
+        self.data["messages"] = message_model_type_adapter.validate_python(self.data["messages"])
 
     def save_data(self) -> None:
         """
@@ -46,16 +43,9 @@ class TicketRepository:
         """
         try:
             with open(self.data_path, "w") as json_file:
-                json.dump(
-                    self.data,
-                    json_file,
-                    indent=4,
-                    default=pydantic_encoder
-                )
+                json.dump(self.data, json_file, indent=2, default=pydantic_encoder)
         except Exception as e:
-            raise SaveFailedException(
-                f"Error in saving data with the root error: {e}"
-            )
+            raise SaveFailedException(f"Error in saving data with the root error: {e}")
 
     def get_total_number_of_tickets(self) -> dict[Status, int]:
         """
@@ -100,7 +90,7 @@ class TicketRepository:
         """
         if status is None:
             if limit is not None:
-                return self.data["tickets"][skip: skip + limit]
+                return self.data["tickets"][skip : skip + limit]
             else:
                 return self.data["tickets"][skip:]
 
@@ -147,10 +137,7 @@ class TicketRepository:
 
         raise TicketNotFoundException(f"No such ticket with id: {ticket_id}")
 
-    def resolve_ticket(
-        self,
-        ticket_id: str
-    ) -> TicketModel:
+    def resolve_ticket(self, ticket_id: str) -> TicketModel:
         """
         Resolves the ticket with the given `ticket_id`.
 
@@ -228,7 +215,7 @@ class TicketRepository:
             List of messages.
         """
         if limit is not None:
-            return self.data["messages"][skip: skip + limit]
+            return self.data["messages"][skip : skip + limit]
         else:
             return self.data["messages"][skip:]
 
@@ -257,9 +244,7 @@ class TicketRepository:
             if message.id == message_id:
                 return message
 
-        raise MessageNotFoundException(
-            f"No such message with id: {message_id}"
-        )
+        raise MessageNotFoundException(f"No such message with id: {message_id}")
 
     def get_ticket_message(self, ticket_id: str) -> MessageModel:
         """
@@ -289,6 +274,5 @@ class TicketRepository:
             return self.get_message(ticket.msg_id)
         except MessageNotFoundException:
             raise MessageNotFoundException(
-                f"No such message with id {ticket.msg_id}"
-                + f" for ticket with id: {ticket_id}"
+                f"No such message with id {ticket.msg_id}" + f" for ticket with id: {ticket_id}"
             )
