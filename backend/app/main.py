@@ -33,11 +33,10 @@ async def root():
 @app.get(
     "/tickets",
     tags=["ticket"],
-    description="""
-        Gets at most `limit` tickets after skipping `skip` tickets and
-        applying `status` filter along with the total number of tickets
-        in each status.
-        """,
+    description=(
+        "Gets at most `limit` tickets after skipping `skip` tickets and applying `status` filter"
+        " along with the total number of tickets in each status."
+    ),
     status_code=status.HTTP_200_OK,
     response_description=(
         "Dictionary containing the list of tickets in interest and the total number of tickets in"

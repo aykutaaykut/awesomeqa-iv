@@ -68,20 +68,17 @@ class TicketRepository:
         status: Optional[list[Status]] = None,
     ) -> list[TicketModel]:
         """
-        Gets at most `limit` tickets after skipping `skip` tickets and
-        applying `status` filter.
+        Gets at most `limit` tickets after skipping `skip` tickets and applying `status` filter.
 
         Parameters
         ----------
         skip: int, default: 0
             Number of tickets to skip from the start.
         limit: int, optional
-            Number of tickets to get at most. By default, all tickets are
-            returned.
-        status: list of str, optional
-            Status of the tickets in interest, used for filtering the tickets.
-            It can contain only `open`, `resolved` and `deleted`. By default,
-            no status filter is applied.
+            Number of tickets to get at most. By default, all tickets are returned.
+        status: list[str], optional
+            Status of the tickets in interest, used for filtering the tickets. It can contain only
+            `open`, `resolved` and `deleted`. By default, no status filter is applied.
 
         Returns
         -------
@@ -206,8 +203,7 @@ class TicketRepository:
         skip: int, default: 0
             Number of messages to skip from the start.
         limit: int, optional
-            Number of messages to get at most. By default, all messages are
-            returned.
+            Number of messages to get at most. By default, all messages are returned.
 
         Returns
         -------
@@ -265,8 +261,7 @@ class TicketRepository:
         TicketNotFoundException
             Thrown if the ticket with the given `ticket` does not exist.
         MessageNotFoundException
-            Thrown if the message belonging to the ticket with the given
-            `ticket_id` does not exist.
+            Thrown if the message belonging to the ticket with the given `ticket_id` does not exist.
         """
         ticket = self.get_ticket(ticket_id)
 
