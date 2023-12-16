@@ -123,7 +123,9 @@ async def delete_ticket(
     status_code=status.HTTP_200_OK,
     response_description="Ticket message with the given `ticket_id`.",
     responses={
-        status.HTTP_404_NOT_FOUND: {"description": "Ticket/Message not found."}
+        status.HTTP_404_NOT_FOUND: {
+            "description": "Ticket/Message not found."
+        }
     },
 )
 async def get_ticket_message(
