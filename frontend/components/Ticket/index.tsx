@@ -5,7 +5,7 @@ import Badge from "../Badge";
 import Image from "next/image";
 import StatusChip from "../StatusChip";
 
-const backendUrl = "http://127.0.0.1:5001";
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const Ticket: Function = ({
   ticket,

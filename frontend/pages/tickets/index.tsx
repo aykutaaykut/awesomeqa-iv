@@ -10,7 +10,7 @@ import Ticket from "../../components/Ticket";
 import Tab from "../../components/Tab";
 import styles from "./tickets.module.css";
 
-const backendUrl = "http://127.0.0.1:5001";
+const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const Tickets: NextPage = () => {
   const [loaded, setLoaded] = useState(false);
