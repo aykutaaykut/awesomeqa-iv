@@ -4,14 +4,20 @@ from fastapi import Depends, FastAPI, Path, Query, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
+from dotenv import load_dotenv
+import os
 
 from app.repositories.ticket_repository import TicketRepository
 from app.models import Status
 
 
-HOST = "localhost"
-BACKEND_PORT = 5001
-FRONTEND_PORT = 3000
+ENV = "dev"
+
+
+load_dotenv(f".env.{ENV}")
+HOST = os.getenv("HOST")
+BACKEND_PORT = int(os.getenv("BACKEND_PORT"))
+FRONTEND_PORT = int(os.getenv("FRONTEND_PORT"))
 
 app = FastAPI()
 
@@ -31,17 +37,31 @@ async def root():
 
 
 @app.get(
+    "/stats",
+    tags=["statistic"],
+    description="Gets the total number of tickets in each status.",
+    status_code=status.HTTP_200_OK,
+    response_description="Dictionary containing the total number of tickets in each status.",
+)
+async def get_total_number_of_tickets(
+    *,
+    ticket_repository: TicketRepository = Depends(lambda: ticket_repository),
+):
+    total_tickets = ticket_repository.get_total_number_of_tickets()
+    return JSONResponse(total_tickets, status_code=200)
+
+
+@app.get(
     "/tickets",
     tags=["ticket"],
     description=(
-        "Gets at most `limit` tickets after skipping `skip` tickets and applying `status` filter"
-        " along with the total number of tickets in each status."
+        "Gets at most `limit` tickets after skipping `skip` tickets and applying `status` filter."
     ),
     status_code=status.HTTP_200_OK,
-    response_description=(
-        "Dictionary containing the list of tickets in interest and the total number of tickets in"
-        " each status."
-    ),
+    response_description="Dictionary containing the list of tickets in interest.",
+    responses={
+        status.HTTP_404_NOT_FOUND: {"description": "Ticket message not found."},
+    },
 )
 async def get_tickets(
     *,
@@ -50,31 +70,27 @@ async def get_tickets(
     status: list[Status] = Query(None),
     ticket_repository: TicketRepository = Depends(lambda: ticket_repository),
 ):
-    tickets = ticket_repository.get_tickets(skip, limit, status)
-    total_tickets = ticket_repository.get_total_number_of_tickets()
-    return JSONResponse(
-        {"tickets": jsonable_encoder(tickets), "totalTickets": total_tickets},
-        status_code=200,
-    )
+    tickets = ticket_repository.get_tickets_with_message(skip, limit, status)
+    return JSONResponse(jsonable_encoder(tickets), status_code=200)
 
 
 @app.get(
-    "/ticket/{ticket_id}",
+    "/ticket/{ticket_id}/context-messages",
     tags=["ticket"],
-    description="Gets the ticket with the given `ticket_id`.",
+    description="Gets the ticket context messages with the given `ticket_id`.",
     status_code=status.HTTP_200_OK,
-    response_description="Ticket with the given `ticket_id`.",
+    response_description="Context messages belonging to the ticket with the given `ticket_id`.",
     responses={
         status.HTTP_404_NOT_FOUND: {"description": "Ticket not found."},
     },
 )
-async def get_ticket(
+async def get_ticket_context_messages(
     *,
     ticket_id: Annotated[str, Path(...)],
     ticket_repository: TicketRepository = Depends(lambda: ticket_repository),
 ):
-    ticket = ticket_repository.get_ticket(ticket_id)
-    return JSONResponse(jsonable_encoder(ticket), status_code=200)
+    context_messages = ticket_repository.get_ticket_context_messages(ticket_id)
+    return JSONResponse(jsonable_encoder(context_messages), status_code=200)
 
 
 @app.put(
@@ -115,42 +131,6 @@ async def delete_ticket(
 ):
     ticket = ticket_repository.delete_ticket(ticket_id)
     return JSONResponse(jsonable_encoder(ticket), status_code=200)
-
-
-@app.get(
-    "/ticket/{ticket_id}/message",
-    tags=["ticket"],
-    description="Gets the ticket message with the given `ticket_id`.",
-    status_code=status.HTTP_200_OK,
-    response_description="Ticket message with the given `ticket_id`.",
-    responses={status.HTTP_404_NOT_FOUND: {"description": "Ticket/Message not found."}},
-)
-async def get_ticket_message(
-    *,
-    ticket_id: Annotated[str, Path(...)],
-    ticket_repository: TicketRepository = Depends(lambda: ticket_repository),
-):
-    message = ticket_repository.get_ticket_message(ticket_id)
-    return JSONResponse(jsonable_encoder(message), status_code=200)
-
-
-@app.get(
-    "/message/{message_id}",
-    tags=["message"],
-    description="Gets the message with the given `message_id`.",
-    status_code=status.HTTP_200_OK,
-    response_description="Message with the given `message_id`.",
-    responses={
-        status.HTTP_404_NOT_FOUND: {"description": "Message not found."},
-    },
-)
-async def get_message(
-    *,
-    message_id: Annotated[str, Path(...)],
-    ticket_repository: TicketRepository = Depends(lambda: ticket_repository),
-):
-    message = ticket_repository.get_message(message_id)
-    return JSONResponse(jsonable_encoder(message), status_code=200)
 
 
 if __name__ == "__main__":
