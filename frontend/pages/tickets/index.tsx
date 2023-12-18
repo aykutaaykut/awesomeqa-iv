@@ -9,18 +9,18 @@ import { useRouter } from "next/router";
 import Ticket from "../../components/Ticket";
 import Tab from "../../components/Tab";
 import styles from "./tickets.module.css";
-
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+import services from "../../service";
 
 const Tickets: NextPage = () => {
   const [loaded, setLoaded] = useState(false);
 
   const [tickets, setTickets] = useState([]);
 
-  const [openTickets, setOpenTickets] = useState(0);
-  const [resolvedTickets, setResolvedTickets] = useState(0);
-  const [deletedTickets, setDeletedTickets] = useState(0);
-  const [totalTickets, setTotalTickets] = useState(0);
+  const [numOfTickets, setNumOfTickets] = useState({
+    open: 0,
+    resolved: 0,
+    deleted: 0,
+  });
 
   const pageSize = 20;
 
@@ -35,60 +35,39 @@ const Tickets: NextPage = () => {
     const urlTab = searchParams.get("tab");
     const urlPage = Number(searchParams.get("page"));
 
-    if (urlTab === "open" || urlTab === "resolved" || urlTab === "deleted") {
-      fetchData(0, 1, urlTab).then((data) => {
-        const total = data.totalTickets[urlTab];
-
-        if (urlPage >= 1 && urlPage <= Math.ceil(total / pageSize)) {
-          setTab(urlTab);
-          setCurrentPage(urlPage);
-
-          handleChangeInURL(urlTab, urlPage);
-        } else {
-          handleTabChange(urlTab);
-        }
-      });
-    } else {
-      handleTabChange("open");
-    }
-  }, []);
-
-  const fetchData = async (startIndex, size, tab) => {
-    const queryParams = new URLSearchParams({
-      skip: startIndex.toString(),
-      limit: size.toString(),
-      status: tab,
-    });
-    const url = `${backendUrl}/tickets?${queryParams}`;
-
-    return fetch(url, {
-      method: "GET",
-      mode: "cors",
-      headers: { accept: "application/json" },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch tickets");
-        }
-        return response.json();
+    services.apiService
+      .getStatistics()
+      .then((stats) => {
+        setNumOfTickets(stats);
+        return stats;
       })
-      .catch((error) => {
-        console.error(`Error while getting tickets: ${error}`);
+      .then((stats) => {
+        if (
+          urlTab === "open" ||
+          urlTab === "resolved" ||
+          urlTab === "deleted"
+        ) {
+          const total = stats[urlTab];
+          if (urlPage >= 1 && urlPage <= Math.ceil(total / pageSize)) {
+            setTab(urlTab);
+            setCurrentPage(urlPage);
+
+            handleChangeInURL(urlTab, urlPage);
+          } else {
+            handleTabChange(urlTab);
+          }
+        } else {
+          handleTabChange("open");
+        }
       });
-  };
+  }, []);
 
   useEffect(() => {
     const startIndex = (currentPage - 1) * pageSize;
-    fetchData(startIndex, pageSize, tab).then((data) => {
+    services.apiService.getTickets(startIndex, pageSize, tab).then((data) => {
       setLoaded(false);
 
-      setOpenTickets(data.totalTickets.open);
-      setResolvedTickets(data.totalTickets.resolved);
-      setDeletedTickets(data.totalTickets.deleted);
-
-      setTotalTickets(data.totalTickets[tab]);
-
-      setTickets(data.tickets);
+      setTickets(data);
 
       setLoaded(true);
     });
@@ -124,10 +103,10 @@ const Tickets: NextPage = () => {
         const startIndex =
           (currentPage - 1) * pageSize + updatedTickets.length - 1;
 
-        if (startIndex < totalTickets - 1) {
-          fetchData(startIndex, 1, tab).then((data) => {
+        if (startIndex < numOfTickets[tab] - 1) {
+          services.apiService.getTickets(startIndex, 1, tab).then((data) => {
             updatedTickets.splice(index, 1);
-            updatedTickets.push(data.tickets[0]);
+            updatedTickets.push(data[0]);
 
             setTickets(updatedTickets);
           });
@@ -143,27 +122,21 @@ const Tickets: NextPage = () => {
   const resolveTicketHandler = async (ticket_id) => {
     await updateTickets(ticket_id);
 
-    if (tab === "open") {
-      setOpenTickets((prev) => prev - 1);
-    } else if (tab === "deleted") {
-      setDeletedTickets((prev) => prev - 1);
-    }
-
-    setResolvedTickets((prev) => prev + 1);
-    setTotalTickets((prev) => prev - 1);
+    setNumOfTickets((prev) => ({
+      ...prev,
+      [tab]: prev[tab] - 1,
+      resolved: prev["resolved"] + 1,
+    }));
   };
 
   const deleteTicketHandler = async (ticket_id) => {
     await updateTickets(ticket_id);
 
-    if (tab === "open") {
-      setOpenTickets((prev) => prev - 1);
-    } else if (tab === "resolved") {
-      setResolvedTickets((prev) => prev - 1);
-    }
-
-    setDeletedTickets((prev) => prev + 1);
-    setTotalTickets((prev) => prev - 1);
+    setNumOfTickets((prev) => ({
+      ...prev,
+      [tab]: prev[tab] - 1,
+      deleted: prev["deleted"] + 1,
+    }));
   };
 
   return (
@@ -187,7 +160,7 @@ const Tickets: NextPage = () => {
                   id="tab-open"
                   name="Open"
                   selected={tab === "open"}
-                  num={openTickets}
+                  num={numOfTickets["open"]}
                   onClick={() => {
                     handleTabChange("open");
                   }}
@@ -196,7 +169,7 @@ const Tickets: NextPage = () => {
                   id="tab-resolved"
                   name="Resolved"
                   selected={tab === "resolved"}
-                  num={resolvedTickets}
+                  num={numOfTickets["resolved"]}
                   onClick={() => {
                     handleTabChange("resolved");
                   }}
@@ -205,7 +178,7 @@ const Tickets: NextPage = () => {
                   id="tab-deleted"
                   name="Deleted"
                   selected={tab === "deleted"}
-                  num={deletedTickets}
+                  num={numOfTickets["deleted"]}
                   onClick={() => {
                     handleTabChange("deleted");
                   }}
@@ -213,8 +186,8 @@ const Tickets: NextPage = () => {
               </div>
               {!loaded && <Loading />}
               <div className={styles.content}>
-                {loaded && totalTickets === 0 && <NoResults />}
-                {loaded && totalTickets > 0 && (
+                {loaded && numOfTickets[tab] === 0 && <NoResults />}
+                {loaded && numOfTickets[tab] > 0 && (
                   <>
                     <table className={styles.ticketsTable}>
                       <tbody>
@@ -246,7 +219,7 @@ const Tickets: NextPage = () => {
                       >
                         Previous
                       </button>
-                      {Array(Math.ceil(totalTickets / pageSize))
+                      {Array(Math.ceil(numOfTickets[tab] / pageSize))
                         .fill(0)
                         .map((_, i) => {
                           const page = i + 1;
@@ -266,7 +239,7 @@ const Tickets: NextPage = () => {
                         })}
                       <button
                         className={styles.paginationButton}
-                        disabled={currentPage * pageSize >= totalTickets}
+                        disabled={currentPage * pageSize >= numOfTickets[tab]}
                         onClick={() => handlePageChange(currentPage + 1)}
                       >
                         Next

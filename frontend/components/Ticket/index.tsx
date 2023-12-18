@@ -4,8 +4,7 @@ import Loading from "../Loading";
 import Badge from "../Badge";
 import Image from "next/image";
 import StatusChip from "../StatusChip";
-
-const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+import services from "../../service";
 
 const Ticket: Function = ({
   ticket,
@@ -16,9 +15,8 @@ const Ticket: Function = ({
 
   const [status, setStatus] = useState(ticket.status);
   const [ts_last_status_change, setTsLastStatusChange] = useState(
-    ticket.ts_last_status_change,
+    ticket.ts_last_status_change
   );
-  const [message, setMessage] = useState(undefined);
 
   const [showContextMessages, setShowContextMessages] = useState(false);
   const [contextMessages, setContextMessages] = useState([]);
@@ -37,64 +35,21 @@ const Ticket: Function = ({
   };
 
   useEffect(() => {
-    const fetchData = async (ticket_id) => {
-      const url = backendUrl + `/ticket/${ticket_id}/message`;
-      fetch(url, {
-        method: "GET",
-        mode: "cors",
-        headers: { accept: "application/json" },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`Failed to fetch ticket with id ${ticket_id}`);
-          }
-          return response.json();
-        })
-        .then((data) => {
-          setMessage(data);
-        })
-        .catch((error) => {
-          console.error(`Error while getting ticket: ${error}`);
-        });
-    };
-
-    setLoaded(false);
-    fetchData(ticket.id).then(() => {
-      setLoaded(true);
-    });
-  }, [ticket.id]);
-
-  useEffect(() => {
     setLoaded(false);
 
     if (showContextMessages) {
-      ticket.context_messages.forEach(async (message_id) => {
-        const url = backendUrl + `/message/${message_id}`;
-        fetch(url, {
-          method: "GET",
-          mode: "cors",
-          headers: { accept: "application/json" },
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`Failed to fetch message with id ${message_id}`);
-            }
-            return response.json();
-          })
-          .then((data) => {
-            setContextMessages((prevCtxMsg) => [...prevCtxMsg, data]);
-          })
-          .catch((error) => {
-            console.error(`Error while getting message: ${error}`);
+      if (contextMessages.length === 0) {
+        services.apiService
+          .getTicketContextMessagesById(ticket.id)
+          .then((contextMessages) => {
+            setContextMessages(contextMessages);
           });
-      });
+      }
 
       if (domContextMessagesButton.current != undefined) {
         domContextMessagesButton.current.className = `${styles.contextMessagesButton} ${styles.contextMessagesButtonClicked}`;
       }
     } else {
-      setContextMessages([]);
-
       if (domContextMessagesButton.current != undefined) {
         domContextMessagesButton.current.className =
           styles.contextMessagesButton;
@@ -106,20 +61,12 @@ const Ticket: Function = ({
 
   const resolveTicket = async () => {
     if (ticket.status !== "resolved") {
-      const url = backendUrl + `/ticket/${ticket.id}`;
-      return fetch(url, {
-        method: "PUT",
-        mode: "cors",
-        headers: { accept: "application/json" },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`Failed to resolve ticket with id ${ticket.id}`);
-          }
+      return services.apiService
+        .resolveTicketById(ticket.id)
+        .then(() => {
           return true;
         })
-        .catch((error) => {
-          console.error(`Error while resolving ticket: ${error}`);
+        .catch(() => {
           return false;
         });
     } else {
@@ -129,20 +76,12 @@ const Ticket: Function = ({
 
   const deleteTicket = async () => {
     if (ticket.status !== "deleted") {
-      const url = backendUrl + `/ticket/${ticket.id}`;
-      return fetch(url, {
-        method: "DELETE",
-        mode: "cors",
-        headers: { accept: "application/json" },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`Failed to delete ticket with id ${ticket.id}`);
-          }
+      return services.apiService
+        .deleteTicketById(ticket.id)
+        .then(() => {
           return true;
         })
-        .catch((error) => {
-          console.error(`Error while deleting ticket: ${error}`);
+        .catch(() => {
           return false;
         });
     } else {
@@ -153,12 +92,12 @@ const Ticket: Function = ({
   return (
     <div className={styles.ticketContainer}>
       {!loaded && <Loading />}
-      {loaded && message && (
+      {loaded && ticket.message && (
         <div className={styles.ticketDetails}>
           {/* Ticket details */}
           <div className={styles.messageContent}>
-            {message.content}
-            {message.has_attachment && (
+            {ticket.message.content}
+            {ticket.message.has_attachment && (
               <Badge
                 text={
                   <>
@@ -179,14 +118,14 @@ const Ticket: Function = ({
             <div className={styles.messageDetailsItem}>
               <div className={styles.messageDetailsItemTitle}>
                 Author
-                {message.author.is_bot ? (
+                {ticket.message.author?.is_bot ? (
                   <Badge text="BOT" blink={true} />
                 ) : (
                   <Badge text="NOT BOT" />
                 )}
               </div>
               <div className={styles.messageDetailsItemValue}>
-                {message.author?.nickname}
+                {ticket.message.author?.nickname}
               </div>
             </div>
             <div className={styles.messageDetailsItem}>
@@ -194,7 +133,7 @@ const Ticket: Function = ({
                 Creation Time
               </div>
               <div className={styles.messageDetailsItemValue}>
-                {new Date(message.timestamp_insert)
+                {new Date(ticket.message.timestamp_insert)
                   .toLocaleDateString(dateLocale, dateOptions)
                   .replaceAll("/", ".")}
               </div>
@@ -224,7 +163,7 @@ const Ticket: Function = ({
             </div>
             <a
               className={`${styles.button} ${styles.openMessageButton}`}
-              href={message.msg_url}
+              href={ticket.message.msg_url}
               target="_blank"
               rel="noreferrer"
             >
