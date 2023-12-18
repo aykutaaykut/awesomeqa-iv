@@ -25,5 +25,3 @@ Steps to setup the frontend environment:
 2. Run `make setup`
 3. Run `make run`
 4. Open it: [http://localhost:3002](http://localhost:3002)
-
-### Happy coding 🎉
